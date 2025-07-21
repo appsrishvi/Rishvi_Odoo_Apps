@@ -109,18 +109,17 @@ class TimesheetDailyMail(models.Model):
             </p>
         """
 
-        # ----------------- Send From info@rishvi.co.uk User ------------------
-        info_partner = self.env['res.partner'].search([('email', '=', 'info@rishvi.co.uk')], limit=1)
-        if not info_partner or not info_partner.user_ids:
-            return  # stop if sender is not available
-        sender_user = info_partner.user_ids[0]
-        email_to = sender_user.email_formatted
-
-
+        if self.env.user.id != self.env.ref('base.user_root').id:
+            # real user
+            sender_email = self.env.user.company_id.partner_id.email or self.env.user.email
+        else:
+            # fallback to admin user
+            admin_user = self.env.ref("base.user_admin", raise_if_not_found=False)
+            sender_email = admin_user.company_id.partner_id.email or admin_user.email
         mail_values = {
             "subject": _("Daily Timesheet Report – %s") % today.strftime("%d %b %Y"),
             "body_html": body_html,
-            "email_to": email_to,
-            "email_from": "admin@rishvi.uk",
+            "email_to": sender_email,
+            "email_from": sender_email,
         }
         self.env['mail.mail'].create(mail_values).send()
