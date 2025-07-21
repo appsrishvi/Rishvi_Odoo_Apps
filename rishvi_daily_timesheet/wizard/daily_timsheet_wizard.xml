@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_daily_timesheet_wizard" model="ir.ui.view">
+        <field name="name">daily.timesheet.wizard.form</field>
+        <field name="model">daily.timesheet.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Daily Timesheet Report">
+                <group>
+                    <field name="file_format"/>
+                    <field name="date_option"/>
+                    <field name="start_date" invisible="date_option != 'custom'"/>
+                    <field name="end_date"  invisible="date_option != 'custom'"/>
+
+                    <field name="employee_option"/>
+                    <field name="employee_ids" invisible="employee_option != 'custom'" widget="many2many_tags"/>
+
+                </group>
+                <footer>
+                    <button string="Ok" type="object" name="action_import" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_daily_timesheet_wizard" model="ir.actions.act_window">
+        <field name="name">Daily Timesheet</field>
+        <field name="res_model">daily.timesheet.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_timesheet_daily_timesheet"
+              parent="hr_timesheet.menu_timesheets_reports"
+              name="Daily Timesheet of all Employees"
+              action="action_daily_timesheet_wizard"/>
+
+</odoo>

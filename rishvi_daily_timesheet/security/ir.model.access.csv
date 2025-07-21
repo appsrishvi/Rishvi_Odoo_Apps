@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+rishvi_daily_timesheet.access_timesheet_daily_mail,access_timesheet_daily_mail,rishvi_daily_timesheet.model_timesheet_daily_mail,base.group_user,1,1,1,1
+rishvi_daily_timesheet.access_daily_timesheet_wizard,access_daily_timesheet_wizard,rishvi_daily_timesheet.model_daily_timesheet_wizard,base.group_user,1,1,1,1
