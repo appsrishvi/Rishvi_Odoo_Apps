@@ -10,6 +10,7 @@
                     <field name="date_option"/>
                     <field name="start_date" invisible="date_option != 'custom'"/>
                     <field name="end_date"  invisible="date_option != 'custom'"/>
+                    <field name="project_id" />
 
                     <field name="employee_option"/>
                     <field name="employee_ids" invisible="employee_option != 'custom'" widget="many2many_tags"/>

@@ -38,6 +38,9 @@ class DailyTimesheetWizard(models.TransientModel):
     start_date = fields.Date("Start Date")
     end_date = fields.Date("End Date")
 
+    # Project Filters
+    project_id = fields.Many2one('project.project', string="Project")
+
     # Employee Filters
     employee_option = fields.Selection([
         ('all', 'All Employees'),
@@ -45,6 +48,24 @@ class DailyTimesheetWizard(models.TransientModel):
     ], string="Employee Filter", default='all')
 
     employee_ids = fields.Many2many('hr.employee', string="Employees")
+
+    @api.onchange('project_id')
+    def _onchange_project_id(self):
+        if self.project_id:
+            tasks = self.env['project.task'].search([('project_id', '=', self.project_id.id)])
+            users = tasks.mapped('user_ids')
+            employees = self.env['hr.employee'].search([('user_id', 'in', users.ids)])
+            self.employee_ids = [(6, 0, employees.ids)]
+            return {
+                'domain': {
+                    'employee_ids': [('id', 'in', employees.ids)]
+                }
+            }
+        else:
+            # If no project, show no employees
+            self.employee_ids = [(6, 0, [])]
+            return {'domain': {'employee_ids': [('id', '=', False)]}}
+
 
     @api.onchange('date_option')
     def _onchange_date_option(self):
@@ -71,9 +92,21 @@ class DailyTimesheetWizard(models.TransientModel):
             if self.end_date:
                 domain.append(('date', '<=', self.end_date))
 
-        # Employee filter
-        if self.employee_option == 'custom' and self.employee_ids:
-            domain.append(('employee_id', 'in', self.employee_ids.ids))
+        #Project filter
+        if self.project_id:
+            task_users = self.env['project.task'].search([
+                ('project_id', '=', self.project_id.id)
+            ]).mapped('user_ids')
+            employees = task_users.mapped('employee_ids')
+
+            if self.employee_option == 'all':
+                domain.append(('employee_id', 'in', employees.ids))
+            elif self.employee_option == 'custom' and self.employee_ids:
+                domain.append(('employee_id', 'in', self.employee_ids.ids))
+        else:
+            # Employee filter
+            if self.employee_option == 'custom' and self.employee_ids:
+                domain.append(('employee_id', 'in', self.employee_ids.ids))
 
         timesheets = self.env['account.analytic.line'].search(domain)
 

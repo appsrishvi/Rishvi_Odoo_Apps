@@ -67,6 +67,7 @@ class TimesheetDailyMail(models.Model):
         # ----------------- Detail Tables ------------------
         details_html = []
         for employee, entries in employee_map.items():
+            total_hours = sum(e["hours"] for e in entries)
             rows = "".join(f"""
                 <tr>
                     <td style="border:1px solid #ccc;padding:8px;word-wrap:break-word;max-width:200px;">{escape(e["project"])}</td>
@@ -89,7 +90,15 @@ class TimesheetDailyMail(models.Model):
                             <th style="border:1px solid #ccc;padding:8px;text-align:right;">Hours</th>
                         </tr>
                     </thead>
-                    <tbody>{rows}</tbody>
+                    <tbody>
+                        {rows}
+                        <tr style="background:#e8f6f3;font-weight:bold;">
+                            <td colspan="3" style="border:1px solid #ccc;padding:8px;text-align:right;">
+                                {_("Total Hours")}
+                            </td>
+                            <td style="border:1px solid #ccc;padding:8px;text-align:right;">{total_hours:.2f}</td>
+                        </tr>
+                    </tbody>
                 </table>
             """)
 
