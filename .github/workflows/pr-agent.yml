@@ -1,9 +1,16 @@
 name: PR Agent
+
 on:
   pull_request:
-    types: [opened, reopened, ready_for_review]
+    types:
+      - opened
+      - reopened
+      - ready_for_review
+      - synchronize
   issue_comment:
-    types: [created]
+    types:
+      - created
+  workflow_dispatch:
 
 jobs:
   pr_agent_job:
@@ -15,13 +22,13 @@ jobs:
       contents: write
     steps:
       - name: PR Agent action step
-        uses: qodo-ai/pr-agent@v0.2.5
+        uses: qodo-ai/pr-agent@0bd56c0508504c718cc03d504cd4ceb6725ba3c7
         env:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          github_action_config.auto_review: "true"
-          github_action_config.auto_describe: "true"
-          github_action_config.auto_improve: "true"
-          config.model: "openai/gpt-4.1"
-          config.fallback_models: '["openai/gpt-4.1"]'
-          config.custom_model_max_tokens: "40000"
+          "github_action_config.auto_review": "true"
+          "github_action_config.auto_describe": "true"
+          "github_action_config.auto_improve": "true"
+          "config.model": "openai/gpt-4.1"
+          "config.fallback_models": '["openai/gpt-4o","openai/gpt-4.1-mini"]'
+          "config.custom_model_max_tokens": "40000"
